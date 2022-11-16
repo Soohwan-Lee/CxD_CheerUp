@@ -4,6 +4,11 @@ import cv2
 from matplotlib import pyplot as plt
 import numpy as np
 
+### Optional if you are using a GPU
+gpus = tf.config.experimental.list_physical_devices('GPU')
+for gpu in gpus:
+    tf.config.experimental.set_memory_growth(gpu, True)
+
 ### Load Model
 model = hub.load('https://tfhub.dev/google/movenet/multipose/lightning/1')
 movenet = model.signatures['serving_default']
@@ -43,7 +48,7 @@ def draw_keypoints(frame, keypoints, confidence_threshold):
     for kp in shaped:
         ky, kx, kp_conf = kp
         if kp_conf > confidence_threshold:
-            cv2.circle(frame, (int(kx), int(ky)), 6, (0,255,0), -1)
+            cv2.circle(frame, (int(kx), int(ky)), 3, (0,255,0), -1)
 
 def draw_connections(frame, keypoints, edges, confidence_threshold):
     y, x, c = frame.shape
@@ -55,10 +60,13 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
         y2, x2, c2 = shaped[p2]
         
         if (c1 > confidence_threshold) & (c2 > confidence_threshold):      
-            cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0,0,255), 4)
+            cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0,0,255), 2)
 
 
 if __name__ == "__main__":
+    ### Variables
+    numberOfPeople = 4
+
     ### Loading Video File
     cap = cv2.VideoCapture('./data/sampleVideo.mp4')
     while cap.isOpened():
@@ -72,9 +80,11 @@ if __name__ == "__main__":
         # Detection section
         results = movenet(input_img)
         keypoints_with_scores = results['output_0'].numpy()[:,:,:51].reshape((6,17,3))
-        # print(results)
-        print(keypoints_with_scores)
-        print("============")
+        keypoints_with_scores = keypoints_with_scores[:numberOfPeople]
+        keypoints_only = np.delete(keypoints_with_scores,2,2)
+
+        # print(keypoints_only)
+        # print("============")
         
         # Render keypoints 
         loop_through_people(frame, keypoints_with_scores, EDGES, 0.1)
