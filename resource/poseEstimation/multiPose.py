@@ -82,8 +82,9 @@ if __name__ == "__main__":
         keypoints_with_scores = results['output_0'].numpy()[:,:,:51].reshape((6,17,3))
         keypoints_with_scores = keypoints_with_scores[:numberOfPeople]
         keypoints_only = np.delete(keypoints_with_scores,2,2)
+        keypoints_only_body = np.delete(keypoints_only, [0,1,2,3,4], 1)
 
-        # print(keypoints_only)
+        # print(keypoints_only_body)
         # print("============")
         
         # Render keypoints 
