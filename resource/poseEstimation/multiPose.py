@@ -13,6 +13,7 @@ for gpu in gpus:
 model = hub.load('https://tfhub.dev/google/movenet/multipose/lightning/1')
 movenet = model.signatures['serving_default']
 
+### Draw EDGES
 EDGES = {
     (0, 1): 'm',
     (0, 2): 'c',
@@ -33,6 +34,22 @@ EDGES = {
     (12, 14): 'c',
     (14, 16): 'c'
 }
+
+### Vector List
+vectorList = [
+    [0,1],
+    [0,2],
+    [1,3],
+    [2,4],
+    [3,5],
+    [0,6],
+    [1,7],
+    [6,7],
+    [6,8],
+    [7,9],
+    [8,10],
+    [9,10]
+]
 
 # Function to loop through each person detected and render
 def loop_through_people(frame, keypoints_with_scores, edges, confidence_threshold):
@@ -84,11 +101,30 @@ if __name__ == "__main__":
         keypoints_only = np.delete(keypoints_with_scores,2,2)
         keypoints_only_body = np.delete(keypoints_only, [0,1,2,3,4], 1)
 
-        # print(keypoints_only_body)
-        # print("============")
+        # Calculate each vector for each person
+        vectors_only_body = []
+        for person in keypoints_only_body:
+            tempPerson = []
+            for i in vectorList:
+                tempVector = person[i[1]] - person[i[0]]
+                tempPerson.append(tempVector)
+                # print(person[i[1]] - person[i[0]])    # vector(second - first)
+                # print("====")
+            vectors_only_body.append(tempPerson)
+
+        vectors_only_body= np.array(vectors_only_body)
+        vectors_only_body.reshape(4,12,2)
+        print(vectors_only_body)
+        print("============")
+
+        ### Calculate BPD(Body-part-level Pose Distance)
+        for person in vectors_only_body:
+            pass
         
         # Render keypoints 
         loop_through_people(frame, keypoints_with_scores, EDGES, 0.1)
+        # loop_through_people(frame, [keypoints_with_scores[0]], EDGES, 0.1)    # Check for first person.....
+
         
         cv2.imshow('Movenet Multipose', frame)
         
