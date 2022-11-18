@@ -3,6 +3,7 @@ import tensorflow_hub as hub
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
+import math
 
 ### Optional if you are using a GPU
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -83,11 +84,15 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
 if __name__ == "__main__":
     ### Variables
     numberOfPeople = 4
+    lamdaVal = 0.885
 
     ### Loading Video File
     cap = cv2.VideoCapture('./data/sampleVideo.mp4')
     while cap.isOpened():
         ret, frame = cap.read()
+
+        ### Variables for each frame
+        BPD = []
         
         # Resize image
         img = frame.copy()
@@ -114,13 +119,38 @@ if __name__ == "__main__":
 
         vectors_only_body= np.array(vectors_only_body)
         vectors_only_body.reshape(4,12,2)
-        print(vectors_only_body)
-        print("============")
+        # print(vectors_only_body)
+        # print("============")
 
         ### Calculate BPD(Body-part-level Pose Distance)
         for person in vectors_only_body:
             pass
+
+        for i in range(12):
+            tempBodyPart = []
+            tempD = []
+            
+            # Calculate vector
+            for person in vectors_only_body:
+                tempBodyPart.append(person[i])
+                # print(person[i])
+                # print("====")
+            tempBodyPart = np.array(tempBodyPart)
+            tempAverageVector = tempBodyPart.mean(axis = 0)
+            
+            # Calculate d
+            for vi in tempBodyPart:
+                tempDVal = np.linalg.norm(vi - tempAverageVector)
+                tempD = np.array(tempD)
+                tempD = np.append(tempD, tempDVal)
+            
+            
+            BPD = np.array(BPD)
+            BPD = np.append(BPD, math.pow(tempD.mean(), lamdaVal))
         
+        print(BPD)
+        print("===============")
+
         # Render keypoints 
         loop_through_people(frame, keypoints_with_scores, EDGES, 0.1)
         # loop_through_people(frame, [keypoints_with_scores[0]], EDGES, 0.1)    # Check for first person.....
