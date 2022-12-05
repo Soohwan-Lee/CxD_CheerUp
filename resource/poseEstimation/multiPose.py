@@ -2,8 +2,11 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import cv2
 from matplotlib import pyplot as plt
+from matplotlib import animation
 import numpy as np
 import math
+import socket
+import time
 
 ### Optional if you are using a GPU
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -13,6 +16,17 @@ for gpu in gpus:
 ### Load Model
 model = hub.load('https://tfhub.dev/google/movenet/multipose/lightning/1')
 movenet = model.signatures['serving_default']
+
+
+### Variables for UDP Send
+# Set IP address as local host, 6100 is destination port
+serverAddressPort = ("127.0.0.1", 6100)
+bufferSize = 1024
+UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+message = 0
+
+def mapping(x,input_min,input_max,output_min,output_max):
+    return (x-input_min)*(output_max-output_min)/(input_max-input_min)+output_min
 
 ### Draw EDGES
 EDGES = {
@@ -81,6 +95,10 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
             cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0,0,255), 2)
 
 
+###
+# Variables for drawing plot in real-time
+
+
 if __name__ == "__main__":
     ### Variables
     numberOfPeople = 4
@@ -117,7 +135,7 @@ if __name__ == "__main__":
                 # print("====")
             vectors_only_body.append(tempPerson)
 
-        vectors_only_body= np.array(vectors_only_body)
+        vectors_only_body = np.array(vectors_only_body)
         vectors_only_body.reshape(4,12,2)
         # print(vectors_only_body)
         # print("============")
@@ -149,12 +167,27 @@ if __name__ == "__main__":
             BPD = np.append(BPD, math.pow(tempD.mean(), lamdaVal))
         
         print(BPD)
+        sumBPD = np.sum(BPD)
+        print(sumBPD)
+        mapBPD = mapping(sumBPD, 0.2, 0.5, 0, 255)
+        print(mapBPD)
         print("===============")
+
+        # Drawing Colored Rectangle
+        start_point = (0, 0)
+        end_point = (30, 30)
+        color = (0, 255-int(mapBPD), int(mapBPD))
+        thickness = -1
+        frame = cv2.rectangle(frame, start_point, end_point, color, thickness)
+
+        # Drawing Plot in Real-time
+
 
         # Render keypoints 
         loop_through_people(frame, keypoints_with_scores, EDGES, 0.1)
         # loop_through_people(frame, [keypoints_with_scores[0]], EDGES, 0.1)    # Check for first person.....
 
+        time.sleep(0.1)
         
         cv2.imshow('Movenet Multipose', frame)
         
