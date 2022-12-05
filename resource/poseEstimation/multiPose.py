@@ -25,8 +25,14 @@ bufferSize = 1024
 UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 message = 0
 
+# Mapping Function
 def mapping(x,input_min,input_max,output_min,output_max):
-    return (x-input_min)*(output_max-output_min)/(input_max-input_min)+output_min
+    val = (x-input_min)*(output_max-output_min)/(input_max-input_min)+output_min
+    if val < output_min:
+        val = output_min
+    elif val > output_max:
+        val = output_max
+    return val
 
 ### Draw EDGES
 EDGES = {
@@ -104,6 +110,9 @@ if __name__ == "__main__":
     numberOfPeople = 4
     lamdaVal = 0.885
 
+    minBPD = 10.0
+    maxBPD = 0.0
+
     ### Loading Video File
     cap = cv2.VideoCapture('./data/sampleVideo.mp4')
     while cap.isOpened():
@@ -168,19 +177,25 @@ if __name__ == "__main__":
         
         print(BPD)
         sumBPD = np.sum(BPD)
-        print(sumBPD)
-        mapBPD = mapping(sumBPD, 0.2, 0.5, 0, 255)
-        print(mapBPD)
+        print("sumBPD: %f", sumBPD)
+        mapBPD = int(mapping(sumBPD, 0.2, 0.5, 0.0, 255.0))
+        print("mapBPD: %f", mapBPD)
+
+        if (minBPD > sumBPD):
+            minBPD = sumBPD
+        if (maxBPD < sumBPD):
+            maxBPD = sumBPD
+        print("minBPD: %f", minBPD)
+        print("maxBPD: %f", maxBPD)
         print("===============")
 
         # Drawing Colored Rectangle
         start_point = (0, 0)
         end_point = (30, 30)
-        color = (0, 255-int(mapBPD), int(mapBPD))
+        color = (0, 255-mapBPD, mapBPD)
         thickness = -1
         frame = cv2.rectangle(frame, start_point, end_point, color, thickness)
-
-        # Drawing Plot in Real-time
+        frame = cv2.putText(frame, str(mapBPD), (30,30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
 
 
         # Render keypoints 
