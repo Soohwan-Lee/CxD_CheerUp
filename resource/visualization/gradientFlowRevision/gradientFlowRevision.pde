@@ -2,7 +2,9 @@ import hypermedia.net.*;
 
 UDP udp;  // define the UDP object
 
-int cells = 128;
+//int cells = 128;
+int cells = 192;
+
 
 PVector[][] field = new PVector[cells][cells];
 float t = random(3);
@@ -117,7 +119,7 @@ class Particle {
     }
     acc = getCell(pos.x, pos.y);
     vel.add(acc);
-    vel.limit(int(speedVal));    //This value 3~10
+    vel.limit(speedVal);    //This value 3~10
     pos.add(vel);
   }
 
@@ -135,7 +137,7 @@ void receive( byte[] data, String ip, int port ) {  // <-- extended handler
   String message = new String( data );
   
   colorVal = map(int(message), 0, 255, 120, 0);
-  speedVal = map(int(message), 0, 255, 3, 10);
+  speedVal = map(int(message), 0, 255, 0.5, 5);
   
   // print the result
   //println( "receive: \""+message+"\" from "+ip+" on port "+port );
