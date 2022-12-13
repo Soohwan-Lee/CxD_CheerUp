@@ -19,11 +19,11 @@ movenet = model.signatures['serving_default']
 
 
 ### Variables for UDP Send
-# Set IP address as local host, 6100 is destination port
-serverAddressPort = ("127.0.0.1", 6100)
+# Set IP address as local host, 12000 is destination port
+serverAddressPort = ("127.0.0.1", 12000)
 bufferSize = 1024
 UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-message = 0
+message = ""
 
 # Mapping Function
 def mapping(x,input_min,input_max,output_min,output_max):
@@ -175,21 +175,25 @@ if __name__ == "__main__":
             BPD = np.array(BPD)
             BPD = np.append(BPD, math.pow(tempD.mean(), lamdaVal))
         
+        ### Check each Value....
         print(BPD)
         sumBPD = np.sum(BPD)
-        print("sumBPD: %f", sumBPD)
+        print("sumBPD: ", sumBPD)
         mapBPD = int(mapping(sumBPD, 0.2, 0.5, 0.0, 255.0))
-        print("mapBPD: %f", mapBPD)
+        print("mapBPD: ", mapBPD)
 
         if (minBPD > sumBPD):
             minBPD = sumBPD
         if (maxBPD < sumBPD):
             maxBPD = sumBPD
-        print("minBPD: %f", minBPD)
-        print("maxBPD: %f", maxBPD)
+        print("minBPD: ", minBPD)   # BPD Maximum Value
+        print("maxBPD: ", maxBPD)   # BPD Minimum Value
         print("===============")
 
-        # Drawing Colored Rectangle
+        # Sending mapBPD to Processing....
+        UDPClientSocket.sendto(str.encode(str(mapBPD)), serverAddressPort)
+
+        # Drawing Colored Rectangle with mapBPD
         start_point = (0, 0)
         end_point = (30, 30)
         color = (0, 255-mapBPD, mapBPD)
