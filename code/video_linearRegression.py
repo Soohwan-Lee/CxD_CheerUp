@@ -7,7 +7,7 @@ import numpy as np
 import math
 import socket
 import time
-import joblib
+import pickle
 
 ### Optional if you are using a GPU
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -115,7 +115,9 @@ if __name__ == "__main__":
     maxBPD = 0.0
 
     ### Load model
-    lr = joblib.load('./model/lr_model.pkl')
+    with open('./model/lr_model.pickle', 'rb') as f:
+        lr = pickle.load(f)
+    # lr = joblib.load('./model/lr_model.pkl')
 
     ### Loading Video File
     cap = cv2.VideoCapture('./data/sampleVideo.mp4')
@@ -187,6 +189,8 @@ if __name__ == "__main__":
         print("mapBPD: ", mapBPD)
         lrResult = lr.predict([[sumBPD]])[0][0]
         print("lrResult: ", lrResult)
+        maplrResult = int(mapping(lrResult, 0.0, 1.0, 0.0, 255.0))
+        print("maplrResult: ", maplrResult)
 
         # if (minBPD > sumBPD):
         #     minBPD = sumBPD
@@ -197,7 +201,7 @@ if __name__ == "__main__":
         print("===============")
 
         # Sending mapBPD to Processing....
-        UDPClientSocket.sendto(str.encode(str(mapBPD)), serverAddressPort)
+        UDPClientSocket.sendto(str.encode(str(maplrResult)), serverAddressPort)
 
         # Drawing Colored Rectangle with mapBPD
         start_point = (0, 0)
