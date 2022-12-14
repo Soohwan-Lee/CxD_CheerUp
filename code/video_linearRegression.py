@@ -185,7 +185,7 @@ if __name__ == "__main__":
         print("sumBPD: ", sumBPD)
         mapBPD = int(mapping(sumBPD, 0.2, 0.5, 0.0, 255.0))
         print("mapBPD: ", mapBPD)
-        lrResult = lr.predict([sumBPD])
+        lrResult = lr.predict([[sumBPD]])[0][0]
         print("lrResult: ", lrResult)
 
         # if (minBPD > sumBPD):
