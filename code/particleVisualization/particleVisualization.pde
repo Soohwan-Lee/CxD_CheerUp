@@ -3,7 +3,7 @@ import hypermedia.net.*;
 UDP udp;  // define the UDP object
 
 //int cells = 128;
-int cells = 192;
+int cells = 156;
 
 
 PVector[][] field = new PVector[cells][cells];

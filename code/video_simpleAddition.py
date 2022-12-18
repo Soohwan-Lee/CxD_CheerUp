@@ -118,24 +118,33 @@ if __name__ == "__main__":
     ### Loading Video File
     cap = cv2.VideoCapture('./data/sampleVideo.mp4')
 
-    ### For audio sync
-    player = MediaPlayer('./data/sampleVideo.mp4')
-    start_time = time.time()
+    # ### Full Screen
+    # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
+    # cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+    # ### Resize Window
+    # cv2.namedWindow("window", cv2.WINDOW_NORMAL)
+    # cv2.resizeWindow("window", 1000, 540)
+
+
+    # ### For audio sync
+    # player = MediaPlayer('./data/sampleVideo.mp4')
+    # start_time = time.time()
 
 
     while cap.isOpened():
         ret, frame = cap.read()
 
-        ### For audio sync..
-        if not ret:
-            break
-        _, val = player.get_frame(show=False)
-        if val == 'eof':
-            break
+        # ### For audio sync..
+        # if not ret:
+        #     break
+        # _, val = player.get_frame(show=False)
+        # if val == 'eof':
+        #     break
 
-        ### Full Screen
-        cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
-        cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        # ### Full Screen
+        # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
+        # cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         ### Variables for each frame
         BPD = []
@@ -229,15 +238,15 @@ if __name__ == "__main__":
         
         cv2.imshow("window", frame)
 
-        ### For Audio Sync...
-        elapsed = (time.time() - start_time) * 1000  # msec
-        play_time = int(cap.get(cv2.CAP_PROP_POS_MSEC))
-        sleep = max(1, int(play_time - elapsed))
+        # ### For Audio Sync...
+        # elapsed = (time.time() - start_time) * 1000  # msec
+        # play_time = int(cap.get(cv2.CAP_PROP_POS_MSEC))
+        # sleep = max(1, int(play_time - elapsed))
         
         if cv2.waitKey(10) & 0xFF==ord('q'):
             break
     
-    player.close_player()
+    # player.close_player()
     cap.release()
     cv2.destroyAllWindows()
 
