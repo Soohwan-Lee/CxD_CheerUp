@@ -7,6 +7,8 @@ import numpy as np
 import math
 import socket
 import time
+from ffpyplayer.player import MediaPlayer
+
 
 ### Optional if you are using a GPU
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -115,8 +117,25 @@ if __name__ == "__main__":
 
     ### Loading Video File
     cap = cv2.VideoCapture('./data/sampleVideo.mp4')
+
+    ### For audio sync
+    player = MediaPlayer('./data/sampleVideo.mp4')
+    start_time = time.time()
+
+
     while cap.isOpened():
         ret, frame = cap.read()
+
+        ### For audio sync..
+        if not ret:
+            break
+        _, val = player.get_frame(show=False)
+        if val == 'eof':
+            break
+
+        ### Full Screen
+        cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         ### Variables for each frame
         BPD = []
@@ -206,12 +225,19 @@ if __name__ == "__main__":
         loop_through_people(frame, keypoints_with_scores, EDGES, 0.1)
         # loop_through_people(frame, [keypoints_with_scores[0]], EDGES, 0.1)    # Check for first person.....
 
-        time.sleep(0.1)
+        # time.sleep(0.1)
         
-        cv2.imshow('Movenet Multipose', frame)
+        cv2.imshow("window", frame)
+
+        ### For Audio Sync...
+        elapsed = (time.time() - start_time) * 1000  # msec
+        play_time = int(cap.get(cv2.CAP_PROP_POS_MSEC))
+        sleep = max(1, int(play_time - elapsed))
         
         if cv2.waitKey(10) & 0xFF==ord('q'):
             break
+    
+    player.close_player()
     cap.release()
     cv2.destroyAllWindows()
 
