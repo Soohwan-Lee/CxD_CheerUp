@@ -87,7 +87,7 @@ def draw_keypoints(frame, keypoints, confidence_threshold):
     for kp in shaped:
         ky, kx, kp_conf = kp
         if kp_conf > confidence_threshold:
-            cv2.circle(frame, (int(kx), int(ky)), 3, (0,255,0), -1)
+            cv2.circle(frame, (int(kx), int(ky)), 3, (0,255,0,0), -1)
 
 def draw_connections(frame, keypoints, edges, confidence_threshold):
     y, x, c = frame.shape
@@ -99,7 +99,7 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
         y2, x2, c2 = shaped[p2]
         
         if (c1 > confidence_threshold) & (c2 > confidence_threshold):      
-            cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0,0,255), 2)
+            cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0,0,255,0), 2)
 
 
 ###
@@ -213,13 +213,13 @@ if __name__ == "__main__":
         # frame = cv2.rectangle(frame, start_point, end_point, color, thickness)
         # frame = cv2.putText(frame, str(maplrResult), (30,30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
         # frame = cv2.rectangle(frame, (120,0), (150,30), (0, 255-mapBPD, mapBPD), thickness)
-        frame = cv2.putText(frame, "Sum of BPD: " + str(round(sumBPD,2)), (150,20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,0), 1, cv2.LINE_AA)
+        # frame = cv2.putText(frame, "Sum of BPD: " + str(round(sumBPD,2)), (150,20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,0), 1, cv2.LINE_AA)
         # frame = cv2.rectangle(frame, (120,30), (150,60), (0, 255-maplrResult, maplrResult), thickness)
-        frame = cv2.putText(frame, "Regression Model Prediction: " + str(round(lrResult,2)), (150,50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,0), 1, cv2.LINE_AA)
+        # frame = cv2.putText(frame, "Regression Model Prediction: " + str(round(lrResult,2)), (150,50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,0), 1, cv2.LINE_AA)
 
 
         # Render keypoints 
-        loop_through_people(frame, keypoints_with_scores, EDGES, 0.1)
+        # loop_through_people(frame, keypoints_with_scores, EDGES, 0.1)
         # loop_through_people(frame, [keypoints_with_scores[0]], EDGES, 0.1)    # Check for first person.....
 
         #time.sleep(0.1)

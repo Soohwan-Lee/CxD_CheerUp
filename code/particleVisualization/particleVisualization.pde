@@ -36,8 +36,8 @@ PVector getCell(float x, float y) {
 }
 
 void setup() {
-  //size(1280, 720, P2D);
-  fullScreen();
+  size(1280, 720, P2D);
+  //fullScreen();
 
   background(0);
 
