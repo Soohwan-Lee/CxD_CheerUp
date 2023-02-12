@@ -216,7 +216,7 @@ if __name__ == "__main__":
         loop_through_people(frame, keypoints_with_scores, EDGES, 0.1)
         # loop_through_people(frame, [keypoints_with_scores[0]], EDGES, 0.1)    # Check for first person.....
 
-        time.sleep(0.1)
+        #time.sleep(0.1)
         
         cv2.imshow('Movenet Multipose', frame)
         
