@@ -201,7 +201,7 @@ if __name__ == "__main__":
         print("===============")
 
         # Sending mapBPD to Processing....
-        UDPClientSocket.sendto(str.encode(str(maplrResult)), serverAddressPort)
+        UDPClientSocket.sendto(str.encode(str(mapBPD)), serverAddressPort)
         # UDPClientSocket.sendto(str.encode(str(mapBPD)), serverAddressPort)
 
 
